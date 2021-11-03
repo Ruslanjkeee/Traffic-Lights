@@ -1,81 +1,31 @@
 <template>
   <div class="lights">
-    <TrafficLight 
-      v-for="light in lights"
-      :key="light.id"
-      :style="{ backgroundColor: light.color }"
-      :isActive="light.isActive"
-      :isBlinking="light.color === 'red' && isTimerBelow"
+    <TrafficLights 
+        :actionTime="actionTime"
+        :id="id"
+        :actualCurrPath='actualCurrPath'
+        :nextPath="nextPath"
     />
+    
   </div>
 </template>
 
 <script>
-import TrafficLight from "@/components/TrafficLight.vue";
+import  TrafficLights  from '@/components/TrafficLights.vue';
 
-export default {
-  name: "Red",
-  components: {
-    TrafficLight,
-  },
-
-  data() {
-    return {
-      actionTime: 10,
-      id: 1,
-      actualCurrPath: this.$router.currentRoute.value.path,
-    }
-  },
-
-  computed: {
-    isTimeout() {
-      return this.$store.getters.isTimerZero;
+export default ({
+    name: "Red",
+    components: {
+        TrafficLights,
     },
 
-    isTimerBelow() {
-      return this.$store.getters.isTimerBelow;
+    data() {
+        return {
+            actionTime: 10,
+            id: 1,
+            actualCurrPath: this.$router.currentRoute.value.path,
+            nextPath: "/yellow"
+        }
     },
-
-    lights() {
-      return this.$store.state.lights;
-    },
-
-    currPathFromStore() {
-      return this.$store.state.currPath;
-    },
-
-    timer() {
-      return this.$store.state.timer;
-    }
-  },
-
-  methods: {
-    initState(id, actionTime, actualCurrPath) {
-      return this.$store.dispatch('initState', {id, actionTime, actualCurrPath});
-    },
-
-    nextLight() {
-      this.$store.commit('changePrevPath', this.actualCurrPath);
-      this.$router.push('/yellow');
-    }
-  },
-
-  mounted() {
-    
-    if(this.timer > 0 && this.actualCurrPath === this.currPathFromStore) {
-      this.actionTime = this.timer;
-    }
-    
-    this.initState(this.id, this.actionTime, this.actualCurrPath);
-  },
-  
-
-  watch: {
-    isTimeout(newVal) {
-      if(newVal) {
-        this.nextLight();
-      }
-    }
-  }
-};
+})
 </script>
