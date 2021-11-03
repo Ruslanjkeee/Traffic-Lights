@@ -58,18 +58,6 @@ export default {
       return this.$store.dispatch('initState', {id, actionTime, actualCurrPath});
     },
 
-    changeActive() {
-      this.$store.commit('changeActive', this.id);
-    },
-
-    setTimer() {
-      this.$store.commit('setTimer', this.actionTime);
-    },
-
-    changeCurrPath() {
-      this.$store.commit('changeCurrPath', this.actualCurrPath);
-    },
-
     nextLight() {
       if(this.prevPath === '/red') {
         this.$router.push('/green');
