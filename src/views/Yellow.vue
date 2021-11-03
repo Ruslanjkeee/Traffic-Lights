@@ -1,11 +1,11 @@
 <template>
   <div class="lights">
     <TrafficLight 
-      v-for="light in $store.state.lights"
+      v-for="light in lights"
       :key="light.id"
       :style="{ backgroundColor: light.color }"
       :isActive="light.isActive"
-      :isBlinking="light.color === 'yellow' && $store.getters.isTimerBelow"
+      :isBlinking="light.color === 'yellow' && isTimerBelow"
     />
   </div>
 </template>
@@ -22,12 +22,44 @@ export default {
   data() {
     return {
       actionTime: 3,
+      id: 2,
+      actualCurrPath: this.$router.currentRoute.value.path,
+    }
+  },
+
+  computed: {
+    isTimeout() {
+      return this.$store.getters.isTimerZero;
+    },
+
+    isTimerBelow() {
+      return this.$store.getters.isTimerBelow;
+    },
+    
+    lights() {
+      return this.$store.state.lights;
+    },
+
+    currPathFromStore() {
+      return this.$store.state.currPath;
+    },
+
+    timer() {
+      return this.$store.state.timer;
+    },
+
+    prevPath() {
+      return this.$store.state.prevPath;
     }
   },
 
   methods: {
+    initState(id, actionTime, actualCurrPath) {
+      return this.$store.dispatch('initState', {id, actionTime, actualCurrPath});
+    },
+
     changeActive() {
-      this.$store.commit('changeActive', 2);
+      this.$store.commit('changeActive', this.id);
     },
 
     setTimer() {
@@ -35,36 +67,28 @@ export default {
     },
 
     changeCurrPath() {
-      this.$store.commit('changeCurrPath', this.$router.currentRoute.value.path);
+      this.$store.commit('changeCurrPath', this.actualCurrPath);
     },
 
     nextLight() {
-      if(this.$store.state.prevPath === '/red') {
+      if(this.prevPath === '/red') {
         this.$router.push('/green');
-      } else if (this.$store.state.prevPath === '/green') {
+      } else if (this.prevPath === '/green') {
         this.$router.push('/red');
       } else {
         this.$router.push('/green');
       }
-      this.$store.commit('changePrevPath', this.$router.currentRoute.value.path);
+      this.$store.commit('changePrevPath', this.actualCurrPath);
     }
   },
 
   mounted() {
-    const curPath = this.$router.currentRoute.value.path;
-    const curPathFromStore = this.$store.state.currPath;
-    if(this.$store.state.timer > 0 && curPath === curPathFromStore) {
-      this.actionTime = this.$store.state.timer;
-    }
-    this.changeCurrPath();
-    this.changeActive();
-    this.setTimer();
-  },
 
-  computed: {
-    isTimeout() {
-      return this.$store.getters.isTimerZero;
+    if(this.timer > 0 && this.actualCurrPath === this.currPathFromStore) {
+      this.actionTime = this.timer;
     }
+
+    this.initState(this.id, this.actionTime, this.actualCurrPath)
   },
 
   watch: {

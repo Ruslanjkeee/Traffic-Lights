@@ -1,4 +1,4 @@
-!/usr/bin/env sh
+#!/usr/bin/env sh
 
 set -e
 
@@ -10,6 +10,6 @@ git init
 git add -A
 git commit -m 'deploy'
 
-git push -f git@github.com:ruslanjkeee/Traffic-lights.git master:gh-pages
+git push -f git@github.com:Ruslanjkeee/Traffic-lights.git master:gh-pages
 
 cd -

@@ -1,11 +1,11 @@
 <template>
   <div class="lights">
     <TrafficLight 
-      v-for="light in $store.state.lights"
+      v-for="light in lights"
       :key="light.id"
       :style="{ backgroundColor: light.color }"
       :isActive="light.isActive"
-      :isBlinking="light.color === 'red' && $store.getters.isTimerBelow"
+      :isBlinking="light.color === 'red' && isTimerBelow"
     />
   </div>
 </template>
@@ -22,45 +22,53 @@ export default {
   data() {
     return {
       actionTime: 10,
+      id: 1,
+      actualCurrPath: this.$router.currentRoute.value.path,
+    }
+  },
+
+  computed: {
+    isTimeout() {
+      return this.$store.getters.isTimerZero;
+    },
+
+    isTimerBelow() {
+      return this.$store.getters.isTimerBelow;
+    },
+
+    lights() {
+      return this.$store.state.lights;
+    },
+
+    currPathFromStore() {
+      return this.$store.state.currPath;
+    },
+
+    timer() {
+      return this.$store.state.timer;
     }
   },
 
   methods: {
-    changeActive() {
-      this.$store.commit('changeActive', 1);
-    },
-
-    setTimer() {
-      this.$store.commit('setTimer', this.actionTime);
-    },
-
-    changeCurrPath() {
-      this.$store.commit('changeCurrPath', this.$router.currentRoute.value.path);
+    initState(id, actionTime, actualCurrPath) {
+      return this.$store.dispatch('initState', {id, actionTime, actualCurrPath});
     },
 
     nextLight() {
-      this.$store.commit('changePrevPath', this.$router.currentRoute.value.path);
+      this.$store.commit('changePrevPath', this.actualCurrPath);
       this.$router.push('/yellow');
     }
   },
 
   mounted() {
-    const curPath = this.$router.currentRoute.value.path;
-    const curPathFromStore = this.$store.state.currPath;
-    if(this.$store.state.timer > 0 && curPath === curPathFromStore) {
-      this.actionTime = this.$store.state.timer;
+    
+    if(this.timer > 0 && this.actualCurrPath === this.currPathFromStore) {
+      this.actionTime = this.timer;
     }
-
-    this.changeCurrPath();
-    this.changeActive();
-    this.setTimer();
+    
+    this.initState(this.id, this.actionTime, this.actualCurrPath);
   },
   
-  computed: {
-    isTimeout() {
-      return this.$store.getters.isTimerZero;
-    }
-  },
 
   watch: {
     isTimeout(newVal) {

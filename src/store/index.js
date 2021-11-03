@@ -18,6 +18,7 @@ export default createStore({
     isTimerBelow(state) {
       return state.timer <= 3;
     },
+    
     isTimerZero(state) {
       return state.timer <= 0;
     }
@@ -48,6 +49,13 @@ export default createStore({
       state.timer -= 1;
     }
   },
-  actions: {},
+
+  actions: {
+    initState(context, {id, actionTime, actualCurrPath}) {
+      context.commit('changeActive', id);
+      context.commit('setTimer', actionTime);
+      context.commit('changeCurrPath', actualCurrPath);
+    }
+  },
   modules: {},
 });

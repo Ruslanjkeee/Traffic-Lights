@@ -11,11 +11,13 @@
     components: {
       Timer,
     },
+
     data() {
       return {
         timerId: 0,
       }
     },
+    
     mounted() { 
       const data = JSON.parse(localStorage.getItem('state'));
       if(data) {

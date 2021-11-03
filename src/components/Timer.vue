@@ -1,12 +1,17 @@
 <template>
     <div class="timer">
-        {{ $store.state.timer }}
+        {{ timer }}
     </div>
 </template>
 
 <script>
 export default {
-    name: 'Timer',
+    name: 'Timer',  
+    computed: {
+        timer() {
+            return this.$store.state.timer;
+        }
+    }
 }
 </script>
 
